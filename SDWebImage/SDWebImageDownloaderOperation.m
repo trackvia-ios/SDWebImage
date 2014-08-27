@@ -11,7 +11,10 @@
 #import "UIImage+MultiFormat.h"
 #import <ImageIO/ImageIO.h>
 
-@interface SDWebImageDownloaderOperation ()
+@interface SDWebImageDownloaderOperation () {
+    BOOL _executing;
+    BOOL _finished;
+}
 
 @property (copy, nonatomic) SDWebImageDownloaderProgressBlock progressBlock;
 @property (copy, nonatomic) SDWebImageDownloaderCompletedBlock completedBlock;
@@ -40,8 +43,8 @@
         _progressBlock = [progressBlock copy];
         _completedBlock = [completedBlock copy];
         _cancelBlock = [cancelBlock copy];
-        @synthesize _executing = NO;
-        @synthesize _finished = NO;
+        _executing = NO;
+        _finished = NO;
         _expectedSize = 0;
         responseFromCached = YES; // Initially wrong until `connection:willCacheResponse:` is called or not called
     }
@@ -132,11 +135,21 @@
     [self didChangeValueForKey:@"isFinished"];
 }
 
+- (BOOL)finished
+{
+    return _finished;
+}
+
 - (void)setExecuting:(BOOL)executing
 {
     [self willChangeValueForKey:@"isExecuting"];
     _executing = executing;
     [self didChangeValueForKey:@"isExecuting"];
+}
+
+- (BOOL)executing
+{
+    return _executing;
 }
 
 - (BOOL)isConcurrent
